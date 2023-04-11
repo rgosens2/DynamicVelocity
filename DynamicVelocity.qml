@@ -152,7 +152,7 @@ MuseScore {
 
 
         
-        if (Object.keys(mscoreElement).length >0) {
+        if (Object.keys(mscoreElement).length > 0) {
             Object.keys(mscoreElement)
                 .filter(function(key) {
                     return mscoreElement[key] != null;
