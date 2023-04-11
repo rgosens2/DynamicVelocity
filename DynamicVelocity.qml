@@ -237,7 +237,7 @@ MuseScore {
         // NONO
         //var velo = 80 // default velocity
 
-        var oCursor = curScore.newCursor() // not uses
+        var oCursor = curScore.newCursor() // not used
         
         //Make sure something is selected.
         if (curScore.selection.elements.length==0) {
