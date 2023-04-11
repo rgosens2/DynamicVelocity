@@ -205,6 +205,7 @@ MuseScore {
             cursor.voice = mscoreElement['voice']
             cursor.rewindToTick(pp.tick)
             var text = newElement(Element.STAFF_TEXT);
+            text.text = '<font size="12"/>' + 80 // default velo 80
 
             for (var key in dynalist) {
                 if (pp.tick == key) {
