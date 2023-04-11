@@ -1,21 +1,21 @@
 //=============================================================================
-// MuseScore
-//
-// Dynamic Velocity Plugin
-//
-// See: https://musescore.org/en/node/320499
-// Home Developers' handbook Plugin development Plugins for 3.x Boilerplates, snippets, use cases and QML notes
-// Use Case: Element Explorer
-// 
-// rgos
-// HACK: We are using this code as a boilerplate to find each note's absolute velocity.
-// We print a note's velocity as set by the dynamics in the score as staff text.
-// This will be the same as a note's Absolute Velocity as seen in the Piano Roll editor
-// minus any modifications by veloOffset and/or hairpins and cresc./dim.
-//
-// Requires a selection. Only tested with one staff. No grace notes.
-//
-// Version 1.0
+//  MuseScore
+//  
+//  Dynamic Velocity Plugin
+//  
+//  See: https://musescore.org/en/node/320499
+//  Home Developers' handbook Plugin development Plugins for 3.x Boilerplates, snippets, use cases and QML notes
+//  Use Case: Element Explorer
+//  
+//  rgos
+//  HACK: We are using this code as a boilerplate to find each note's absolute velocity.
+//  We print a note's velocity as set by the dynamics in the score as staff text.
+//  This will be the same as a note's Absolute Velocity as seen in the Piano Roll editor
+//  minus any modifications by veloOffset and/or hairpins and cresc./dim.
+//  
+//  Requires a selection. Only tested with one staff. No grace notes.
+//  
+//  Version 1.0
 //=============================================================================
 
 
@@ -145,7 +145,7 @@ MuseScore {
             
             // Interesting:
             // QQmlListProperty< Ms::PluginAPI::Element > 	elements
-             // List of other elements attached to this note: fingerings, symbols, bends etc. More...
+            // List of other elements attached to this note: fingerings, symbols, bends etc. More...
             
         }
         /////////////////////////////
