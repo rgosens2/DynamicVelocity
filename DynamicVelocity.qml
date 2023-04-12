@@ -282,7 +282,7 @@ MuseScore {
                 console.log("---- Element# [", i, "] is a || ", oElementsList[i].name, " ||");
                 console.log("");
                 showObject(oElementsList[i]);
-                console.log("\n");
+                console.log("");
                 console.log("---- END Element# [", i, "]");
                 console.log("------------------------------------------------------------------------");
                 console.log("");
