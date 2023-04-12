@@ -146,7 +146,10 @@ MuseScore {
             // Interesting:
             // QQmlListProperty< Ms::PluginAPI::Element > 	elements
             // List of other elements attached to this note: fingerings, symbols, bends etc. More...
-            
+            // NOGO:
+            // for (var el in mscoreElement['elements']) {
+            //     console.log(el.type + ' ' + el.name);
+            // }
         }
         /////////////////////////////
 
@@ -203,8 +206,25 @@ MuseScore {
             // Add text via cursor
             var cursor = curScore.newCursor()
             cursor.voice = mscoreElement['voice']
+            // TEST: set the correct staff
+            // YESS: works 
+            // TODO: need to rebuild the dynalist for every staff
+            cursor.staffIdx = mscoreElement['track']/4
             cursor.rewindToTick(pp.tick)
             var text = newElement(Element.STAFF_TEXT);
+            // TODO: dit gaat fout bij een selection waarvan de beginnoot geen dynamic heeft
+            // en volgt op een noot met elke andere dynamic dan mf. We moeten dus eigenlijk
+            // een dynalist maken voor de gehele staff en dan terugzoeken naar de laatste
+            // dynamic voor de selection
+            // Of itereren over de hele staff en alleen bij de geselecteerde noten text
+            // printen. Dan gaat het ook goed.
+            // TODO: het gaat ook fout als we geen range selection hebben maar alleen noten
+            // selecteren
+            // Het beste is eerst programmatisch de hele score selecteren, dan van elke staff
+            // een dynalist maken (grand staff as one), en dan itereren over de noten.
+            // Probleem is dat je dan waarschijnlijk wel je oorsponkelijke selectie verliest.
+            // HELL: we kunnen het ook hierbij laten: als er geen dynamic is geselecteerd
+            // defaulten we gewoon tot velo 80 (mf)
             text.text = '<font size="12"/>' + 80 // default velo 80
 
             for (var key in dynalist) {
@@ -221,7 +241,7 @@ MuseScore {
             for (var key in dynalist) {
                 if (pp.tick > key) {
                     text.text = '<font size="12"/>' + velo
-                    break
+                    //break
                 }
             }
 
@@ -249,6 +269,10 @@ MuseScore {
         //We have a selection, now explode it...
         else { 
             var oElementsList = curScore.selection.elements;
+
+            // TODO: in order to make multiple staff selection work we have to check
+            // for staffIdx = mscoreElement['track']/4 here and split up oElementsList
+            // per staff
 
             console.log("");
             console.log("---- | Number of Selected Elements to Examine: [", oElementsList.length, "]");
