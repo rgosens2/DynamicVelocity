@@ -253,7 +253,7 @@ MuseScore {
 //==== PLUGIN RUN-TIME ENTRY POINT =============================================
 
     onRun: {
-        console.log("********** RUNNING **********\n");
+        console.log("********** RUNNING **********");
 
         // NONO
         //var velo = 80 // default velocity
