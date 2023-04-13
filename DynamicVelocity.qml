@@ -364,7 +364,11 @@ MuseScore {
         }
 
         // restore original selection
+        // NOTE: We need not do this. MS default behaviour is to deselect the notes
+        // after an operation and select the last text added
+        // So we may as well just clear the selection
         // TODO: print velo text only for notes in the original selection
+        // DONE: with a hack
         curScore.startCmd()
         //curScore.selection.clear()
         // HELL: why are we getting length 289 here and the correct number at the start
@@ -372,12 +376,14 @@ MuseScore {
         // OKOK: it is a pointer, so if we set a select all, this gets automatically updated
         // We must save the selection list to a new array
         console.log(oElementsListOrig.length)
-        for (var i=0; i<oElementsListOrig.length; i++) {
-            if (i==0)
-                curScore.selection.select(oElementsListOrig[i], false)
-            else
-                curScore.selection.select(oElementsListOrig[i], true)
-        }
+        // for (var i=0; i<oElementsListOrig.length; i++) {
+        //     if (i==0)
+        //         curScore.selection.select(oElementsListOrig[i], false)
+        //     else
+        //         curScore.selection.select(oElementsListOrig[i], true)
+        // }
+        // mimic MS default behaviour
+        curScore.selection.clear()
         curScore.endCmd()
         //////////
 
