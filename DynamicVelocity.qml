@@ -274,6 +274,12 @@ MuseScore {
 
         var oCursor = curScore.newCursor() // now used
 
+        // NOTE: programmatically selecting all and then building a dynalist works
+        // fairly well but is slow on big files. We can speed
+        // things up by commenting out useless original code in showObject() and only build
+        // the dynalist there. Another option is to build only dynalists for selected
+        // (notes') staffs. Building a dynalist per staff/channel still needs to be done.
+
         // TEST: programmatically select all to build a staff's complete dynalist
         // OKOK: Works but we lose the original selection so must save that first
         // and then reselect with curScore.selection.select() or curScore.selection.selectRange()
