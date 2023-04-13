@@ -280,6 +280,10 @@ MuseScore {
         // the dynalist there. Another option is to build only dynalists for selected
         // (notes') staffs. Building a dynalist per staff/channel still needs to be done.
 
+        // NOTE2: in the Piano Roll editor, changes in Absolute Velocity by hairpins
+        // are shown. We can never achieve that in this plugin because the API does not
+        // give access to hairpin duration.
+
         // TEST: programmatically select all to build a staff's complete dynalist
         // OKOK: Works but we lose the original selection so must save that first
         // and then reselect with curScore.selection.select() or curScore.selection.selectRange()
