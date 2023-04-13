@@ -312,6 +312,7 @@ MuseScore {
         // NOTE: need start/endCmd() around every score modification otherwise plugin sees nothing selected
         // ALSO: this fucks up Undo/Redo wheras it should make that work
         // OKOK: works now: we also had to put start/endCmd() round printVelo()
+        // TODO: build a dynalist for each staff/channel
         curScore.startCmd()        
         curScore.selection.selectRange(startTick, endTick, 0, curScore.nstaves)
         curScore.endCmd()
