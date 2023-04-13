@@ -356,7 +356,7 @@ MuseScore {
         //curScore.selection.clear()
         // HELL: why are we getting length 289 here and the correct number at the start
         // Even with a global var
-        // OKOK: it is a pointer, so if we set a select all, this get automatically updated
+        // OKOK: it is a pointer, so if we set a select all, this gets automatically updated
         // We must save the selection list to a new array
         console.log(oElementsListOrig.length)
         for (var i=0; i<oElementsListOrig.length; i++) {
