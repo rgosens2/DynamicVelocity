@@ -58,6 +58,7 @@ MuseScore {
     // JS global var
     property var velo: 80
     property var dynalist: []
+    property var oElementsListOrig: []
 
     function showObject(mscoreElement) {
         //	PURPOSE: Lists all key -> value pairs of the passed in
@@ -245,20 +246,67 @@ MuseScore {
                 }
             }
 
-            cursor.add(text)
+            // Only print velo for notes in original selection
+            // ALAS: cannot compare objects, probably because we made a shallow copy
+            // HACK: compare tick and pitch
+            for (var i=0; i<oElementsListOrig.length; i++) {
+                //curScore.startCmd()
+                if (pp.tick == oElementsListOrig[i]['parent']['parent'].tick &&
+                    mscoreElement['pitch'] == oElementsListOrig[i]['pitch'])
+                    cursor.add(text)
+                //curScore.endCmd()
+            }
         }
+
+        // TEST: print velo by iterating over notes
+
+        //////
     }
 
 
 //==== PLUGIN RUN-TIME ENTRY POINT =============================================
 
     onRun: {
-        console.log("********** RUNNING **********");
+        console.log("********** RUNNING **********\n");
 
         // NONO
         //var velo = 80 // default velocity
 
-        var oCursor = curScore.newCursor() // not used
+        var oCursor = curScore.newCursor() // now used
+
+        // TEST: programmatically select all to build a staff's complete dynalist
+        // OKOK: Works but we lose the original selection so must save that first
+        // and then reselect with curScore.selection.select() or curScore.selection.selectRange()
+        // What a hassle. But let's try it because we can use the saved selection to find out
+        // which notes need velo text and then only print those.
+        // NOTE: cannot save like this: it is just a pointer
+        // See: https://www.freecodecamp.org/news/how-to-clone-an-array-in-javascript-1d3183468f6a/
+        // save original selection
+        //var oElementsListOrig = []  
+        //oElementsListOrig = [...curScore.selection.elements] // Alas: ES6 too modern
+        // NOTE: this only makes a shallow copy
+        for (var i=0; i<curScore.selection.elements.length; i++) {
+            oElementsListOrig[i] = curScore.selection.elements[i]
+        }
+        //console.log(oElementsListOrig.length) // OK here
+        //Qt.quit(); // OK to check but why is this not really quitting?
+        var startTick = 0
+        var endTick = 0
+        oCursor.rewind(0)
+        while (oCursor.next()) {
+            if (oCursor.segment) {
+                endTick = oCursor.segment.tick
+            }
+            //console.log(endTick)
+        }
+        // NOTE: need start/endCmd() around every score modification otherwise plugin sees nothing selected
+        // ALSO: this fucks up Undo/Redo wheras it should make that work
+        // OKOK: works now: we also had to put start/endCmd() round printVelo()
+        curScore.startCmd()        
+        curScore.selection.selectRange(startTick, endTick, 0, curScore.nstaves)
+        curScore.endCmd()
+        // ////////////////////////
+
         
         //Make sure something is selected.
         if (curScore.selection.elements.length==0) {
@@ -289,15 +337,36 @@ MuseScore {
             }
 
             //////////
-            for (var i=0; i<oElementsList.length; i++) {
-                printVelo(oElementsList[i])
+            curScore.startCmd()
+            for (var i=0; i<oElementsList.length; i++) {                
+                printVelo(oElementsList[i])                
             }
+            curScore.endCmd()
+            //////////
         }
 
         // show dynamics list
         for (var key in dynalist) {
             console.log("tick " + key + " has velo " + dynalist[key])			
         }
+
+        // restore original selection
+        // TODO: print velo text only for notes in the original selection
+        curScore.startCmd()
+        //curScore.selection.clear()
+        // HELL: why are we getting length 289 here and the correct number at the start
+        // Even with a global var
+        // OKOK: it is a pointer, so if we set a select all, this get automatically updated
+        // We must save the selection list to a new array
+        console.log(oElementsListOrig.length)
+        for (var i=0; i<oElementsListOrig.length; i++) {
+            if (i==0)
+                curScore.selection.select(oElementsListOrig[i], false)
+            else
+                curScore.selection.select(oElementsListOrig[i], true)
+        }
+        curScore.endCmd()
+        //////////
 
         console.log("********** QUITTING **********\n");
         Qt.quit();
