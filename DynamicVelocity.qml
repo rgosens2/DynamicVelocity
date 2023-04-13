@@ -300,6 +300,8 @@ MuseScore {
         }
         //console.log(oElementsListOrig.length) // OK here
         //Qt.quit(); // OK to check but why is this not really quitting?
+
+        // TODO: it is probably best to loop through each staff/channel here
         var startTick = 0
         var endTick = 0
         oCursor.rewind(0)
