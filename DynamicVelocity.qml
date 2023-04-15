@@ -270,7 +270,8 @@ MuseScore {
             // TODO: What happens if we have a grand staff.
             for (var i=0; i<oElementsListOrig.length; i++) {
                 //curScore.startCmd()
-                if (pp.tick == oElementsListOrig[i]['parent']['parent'].tick &&
+                if (oElementsListOrig[i]['name'] == 'Note' &&
+                    pp.tick == oElementsListOrig[i]['parent']['parent'].tick &&
                     mscoreElement['pitch'] == oElementsListOrig[i]['pitch'] &&
                     mscoreElement['staff'].part.midiChannel == oElementsListOrig[i]['staff'].part.midiChannel) 
                 { 
