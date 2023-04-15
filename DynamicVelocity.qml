@@ -12,6 +12,10 @@
 //  We print a note's velocity as set by the dynamics in the score as staff text.
 //  This will be the same as a note's Absolute Velocity as seen in the Piano Roll editor
 //  minus any modifications by veloOffset and/or hairpins and cresc./dim.
+//
+//  NOTE: multistaff selection works now but the code is very hacky and in the end
+//  this plugin is not very useful because it can not determine a note's absolute
+//  velocity over a hairpin or cresc./dim.
 //  
 //  Requires a selection. Only tested with one staff. No grace notes.
 //  
@@ -259,7 +263,7 @@ MuseScore {
             // We use tick, pitch, and staff(midiChannel) comparison
             // ALAS: cannot compare objects, probably because we made a shallow copy
             // HACK: compare tick and pitch
-            // HELL: cannot get staff number from orig note selection so lets compare midiChannel
+            // HELL: cannot get staff number from orig note selection so let's compare midiChannel
             // to determine if it is the same staff. Very hacky.
             // NOTE: oElementsListOrig does not seem to be a shallow copy: element[].part[].staff[]
             // All data several arrays deep is there.
