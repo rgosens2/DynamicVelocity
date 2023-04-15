@@ -128,6 +128,14 @@ MuseScore {
             console.log(pp.name) // YESS: Segment <- Chord <- Note
             // But see: https://musescore.github.io/MuseScore_PluginAPI_Docs/plugins/html/inherits.html
             // This is not the same as the class inheritance relation
+            // API inheritance versus Score Structure
+            // See: https://musescore.org/en/handbook/developers-handbook/plugins-3x#enum
+            // Beginners into programming may get confused with API Class Inheritance
+            // Hierarchy and Musescore runtime internal score structure hierarchy, 
+            // read up on inheritance object oriented programming, also try out the 
+            // debugger
+            // See: https://musescore.org/en/developers-handbook/references/musescore-internal-score-representation
+
 
             // Add text via cursor
             var cursor = curScore.newCursor()
@@ -173,7 +181,7 @@ MuseScore {
         }
     }
 
-    function printVelo(mscoreElement) {
+    function printVelo(mscoreElement, staff) {
         // SHIT: dynamics attached to a rest will not enter here but they must 
         // be considered for they will reset the velo
         // Mmm, dynalist werkt toch niet zo lekker. We hebben toch Dynamic nodig
@@ -200,7 +208,7 @@ MuseScore {
             // NONO: we can take the parent's parent
             var p = mscoreElement['parent'] // Chord
             var pp = p['parent']            // Segment
-            console.log(pp.name) // YESS: Segment <- Chord <- Note
+            //console.log(pp.name) // YESS: Segment <- Chord <- Note
             // But see: https://musescore.github.io/MuseScore_PluginAPI_Docs/plugins/html/inherits.html
             // This is not the same as the class inheritance relation
 
@@ -210,7 +218,8 @@ MuseScore {
             // TEST: set the correct staff
             // YESS: works 
             // TODO: need to rebuild the dynalist for every staff
-            cursor.staffIdx = mscoreElement['track']/4
+            cursor.staffIdx = staff
+            //console.log(mscoreElement['track']/4)
             cursor.rewindToTick(pp.tick)
             var text = newElement(Element.STAFF_TEXT);
             // TODO: dit gaat fout bij een selection waarvan de beginnoot geen dynamic heeft
@@ -247,14 +256,25 @@ MuseScore {
             }
 
             // Only print velo for notes in original selection
+            // We use tick, pitch, and staff(midiChannel) comparison
             // ALAS: cannot compare objects, probably because we made a shallow copy
             // HACK: compare tick and pitch
+            // HELL: cannot get staff number from orig note selection so lets compare midiChannel
+            // to determine if it is the same staff. Very hacky.
+            // NOTE: oElementsListOrig does not seem to be a shallow copy: element[].part[].staff[]
+            // All data several arrays deep is there.
+            // TODO: What happens if we have a grand staff.
             for (var i=0; i<oElementsListOrig.length; i++) {
                 //curScore.startCmd()
                 if (pp.tick == oElementsListOrig[i]['parent']['parent'].tick &&
-                    mscoreElement['pitch'] == oElementsListOrig[i]['pitch'])
+                    mscoreElement['pitch'] == oElementsListOrig[i]['pitch'] &&
+                    mscoreElement['staff'].part.midiChannel == oElementsListOrig[i]['staff'].part.midiChannel) 
+                { 
                     cursor.add(text)
+                }
                 //curScore.endCmd()
+                // TEST:
+                //console.log('stafstuff: ' + oElementsListOrig[i]['staff'].part.midiChannel)
             }
         }
 
@@ -300,68 +320,95 @@ MuseScore {
         }
         //console.log(oElementsListOrig.length) // OK here
         //Qt.quit(); // OK to check but why is this not really quitting?
+        curScore.startCmd()
+        curScore.selection.clear()
+        curScore.endCmd()
+
+
+
 
         // TODO: it is probably best to loop through each staff/channel here
-        var startTick = 0
-        var endTick = 0
-        oCursor.rewind(0)
-        while (oCursor.next()) {
-            if (oCursor.segment) {
-                endTick = oCursor.segment.tick
+        // Loop through staves
+        for (var s = 0; s < curScore.nstaves; s++) {    
+            var startTick = 0
+            var endTick = 0
+            oCursor.voice = 0;
+            oCursor.staffIdx = s;
+            oCursor.rewind(0)
+            while (oCursor.next()) {
+                if (oCursor.segment) {
+                    endTick = oCursor.segment.tick
+                }
+                //console.log(endTick)
             }
-            //console.log(endTick)
-        }
-        // NOTE: need start/endCmd() around every score modification otherwise plugin sees nothing selected
-        // ALSO: this fucks up Undo/Redo wheras it should make that work
-        // OKOK: works now: we also had to put start/endCmd() round printVelo()
-        // TODO: build a dynalist for each staff/channel
-        curScore.startCmd()        
-        curScore.selection.selectRange(startTick, endTick, 0, curScore.nstaves)
-        curScore.endCmd()
-        // ////////////////////////
-
-        
-        //Make sure something is selected.
-        if (curScore.selection.elements.length==0) {
-            console.log("**** NOTHING SELECTED");
-            console.log("**** Select an element on the score and try again");
-            console.log("****");
-        }
-        //We have a selection, now explode it...
-        else { 
-            var oElementsList = curScore.selection.elements;
-
-            // TODO: in order to make multiple staff selection work we have to check
-            // for staffIdx = mscoreElement['track']/4 here and split up oElementsList
-            // per staff
-
-            console.log("");
-            console.log("---- | Number of Selected Elements to Examine: [", oElementsList.length, "]");
-            console.log("");
-            for (var i=0; i<oElementsList.length; i++) {
-                console.log("------------------------------------------------------------------------");
-                console.log("---- Element# [", i, "] is a || ", oElementsList[i].name, " ||");
-                console.log("");
-                showObject(oElementsList[i]);
-                console.log("");
-                console.log("---- END Element# [", i, "]");
-                console.log("------------------------------------------------------------------------");
-                console.log("");
-            }
-
-            //////////
-            curScore.startCmd()
-            for (var i=0; i<oElementsList.length; i++) {                
-                printVelo(oElementsList[i])                
-            }
+            // NOTE: need start/endCmd() around every score modification otherwise plugin sees nothing selected
+            // ALSO: this fucks up Undo/Redo wheras it should make that work
+            // OKOK: works now: we also had to put start/endCmd() round printVelo()
+            // TODO: build a dynalist for each staff/channel
+            curScore.startCmd() 
+            // Select all      
+            //curScore.selection.selectRange(startTick, endTick, 0, curScore.nstaves)
+            //curScore.selection.selectRange(0, curScore.lastSegment.tick + 1, 0, curScore.nstaves);
+            // Select one staff
+            curScore.selection.selectRange(startTick, endTick, s, s+1)
             curScore.endCmd()
-            //////////
-        }
+            // ////////////////////////
 
-        // show dynamics list
-        for (var key in dynalist) {
-            console.log("tick " + key + " has velo " + dynalist[key])			
-        }
+            
+            //Make sure something is selected.
+            if (curScore.selection.elements.length==0) {
+                console.log("**** NOTHING SELECTED");
+                console.log("**** Select an element on the score and try again");
+                console.log("****");
+            }
+            //We have a selection, now explode it...
+            else { 
+                var oElementsList = curScore.selection.elements;
+
+                // TODO: in order to make multiple staff selection work we have to check
+                // for staffIdx = mscoreElement['track']/4 here and split up oElementsList
+                // per staff
+
+                console.log("");
+                console.log("---- | Number of Selected Elements to Examine: [", oElementsList.length, "]");
+                console.log("");
+                for (var i=0; i<oElementsList.length; i++) {
+                    console.log("------------------------------------------------------------------------");
+                    console.log("---- Element# [", i, "] is a || ", oElementsList[i].name, " ||");
+                    console.log("");
+                    showObject(oElementsList[i]);
+                    console.log("");
+                    console.log("---- END Element# [", i, "]");
+                    console.log("------------------------------------------------------------------------");
+                    console.log("");
+                }
+
+                //////////
+                curScore.startCmd()
+                for (var i=0; i<oElementsList.length; i++) {                
+                    printVelo(oElementsList[i], s)                
+                }
+                curScore.endCmd()
+                //////////	
+            }
+
+            // show dynamics list
+            for (var key in dynalist) {
+                console.log("tick " + key + " has velo " + dynalist[key])		
+            }
+            // empty dynalist for next staff
+            dynalist.length = 0
+
+            curScore.startCmd()
+            curScore.selection.clear()
+            curScore.endCmd()
+
+            
+        } // END staff loop
+
+
+
+
 
         // restore original selection
         // NOTE: We need not do this. MS default behaviour is to deselect the notes
@@ -375,7 +422,7 @@ MuseScore {
         // Even with a global var
         // OKOK: it is a pointer, so if we set a select all, this gets automatically updated
         // We must save the selection list to a new array
-        console.log(oElementsListOrig.length)
+        //console.log(oElementsListOrig.length)
         // for (var i=0; i<oElementsListOrig.length; i++) {
         //     if (i==0)
         //         curScore.selection.select(oElementsListOrig[i], false)
