@@ -185,6 +185,33 @@ MuseScore {
         }
     }
 
+
+    function buildDynaList(mscoreElement) {
+        // Speed things up by ditching the original key traversal code and all console logs that were
+        // used in showObject()
+        if (mscoreElement.name == 'Dynamic') {
+            //console.log('Dyna')
+            //console.log(mscoreElement['velocity'])
+            //console.log(mscoreElement['parent'].name) // A Dynamic's parent is a Segment
+            //console.log(mscoreElement['parent'].tick) // And Segments have a tick
+
+            // Add text via cursor
+            // var cursor = curScore.newCursor()
+            // cursor.rewindToTick(mscoreElement['parent'].tick)
+            // var text = newElement(Element.STAFF_TEXT);
+            // text.text = '<font size="8"/>' + mscoreElement['velocity']
+            // cursor.add(text)
+
+            // save for following notes
+            velo = mscoreElement['velocity']
+
+            // build dynamics list
+            var tick = mscoreElement['parent'].tick
+            if (!dynalist[tick]) // only the first dynamic per tick
+                dynalist[tick] = velo
+        }
+    }
+
     function printVelo(mscoreElement, staff) {
         // SHIT: dynamics attached to a rest will not enter here but they must 
         // be considered for they will reset the velo
@@ -223,7 +250,7 @@ MuseScore {
             // YESS: works 
             // TODO: need to rebuild the dynalist for every staff
             cursor.staffIdx = staff
-            //console.log('staffIdx: ' + mscoreElement['track']/4)
+            //console.log('stafIdx: ' + mscoreElement['track']/4)
             cursor.rewindToTick(pp.tick)
             var text = newElement(Element.STAFF_TEXT);
             // TODO: dit gaat fout bij een selection waarvan de beginnoot geen dynamic heeft
@@ -385,7 +412,8 @@ MuseScore {
                     console.log("------------------------------------------------------------------------");
                     console.log("---- Element# [", i, "] is a || ", oElementsList[i].name, " ||");
                     console.log("");
-                    showObject(oElementsList[i]);
+                    //showObject(oElementsList[i]);
+                    buildDynaList(oElementsList[i]);
                     console.log("");
                     console.log("---- END Element# [", i, "]");
                     console.log("------------------------------------------------------------------------");
