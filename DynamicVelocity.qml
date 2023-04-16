@@ -223,7 +223,7 @@ MuseScore {
             // YESS: works 
             // TODO: need to rebuild the dynalist for every staff
             cursor.staffIdx = staff
-            //console.log(mscoreElement['track']/4)
+            //console.log('stafIdx: ' + mscoreElement['track']/4)
             cursor.rewindToTick(pp.tick)
             var text = newElement(Element.STAFF_TEXT);
             // TODO: dit gaat fout bij een selection waarvan de beginnoot geen dynamic heeft
@@ -261,10 +261,13 @@ MuseScore {
 
             // Only print velo for notes in original selection
             // We use tick, pitch, and staff(midiChannel) comparison
+            // TODO: should probably also do voice comparison
             // ALAS: cannot compare objects, probably because we made a shallow copy
             // HACK: compare tick and pitch
             // HELL: cannot get staff number from orig note selection so let's compare midiChannel
             // to determine if it is the same staff. Very hacky.
+            // WELL: we can get staff number: oElementsListOrig[i]['track']/4
+            // So printVelo() did not need the staff param
             // NOTE: oElementsListOrig does not seem to be a shallow copy: element[].part[].staff[]
             // All data several arrays deep is there.
             // TODO: What happens if we have a grand staff.
@@ -273,7 +276,8 @@ MuseScore {
                 if (oElementsListOrig[i]['name'] == 'Note' &&
                     pp.tick == oElementsListOrig[i]['parent']['parent'].tick &&
                     mscoreElement['pitch'] == oElementsListOrig[i]['pitch'] &&
-                    mscoreElement['staff'].part.midiChannel == oElementsListOrig[i]['staff'].part.midiChannel) 
+                    mscoreElement['track']/4 == oElementsListOrig[i]['track']/4)
+                    //mscoreElement['staff'].part.midiChannel == oElementsListOrig[i]['staff'].part.midiChannel) 
                 { 
                     cursor.add(text)
                 }
