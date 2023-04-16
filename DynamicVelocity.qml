@@ -17,7 +17,7 @@
 //  this plugin is not very useful because it can not determine a note's absolute
 //  velocity over a hairpin or cresc./dim.
 //  
-//  Requires a selection. Only tested with one staff. No grace notes.
+//  Requires a selection. No grace notes.
 //  
 //  Version 1.1
 //=============================================================================
