@@ -223,7 +223,7 @@ MuseScore {
             // YESS: works 
             // TODO: need to rebuild the dynalist for every staff
             cursor.staffIdx = staff
-            //console.log('stafIdx: ' + mscoreElement['track']/4)
+            //console.log('staffIdx: ' + mscoreElement['track']/4)
             cursor.rewindToTick(pp.tick)
             var text = newElement(Element.STAFF_TEXT);
             // TODO: dit gaat fout bij een selection waarvan de beginnoot geen dynamic heeft
