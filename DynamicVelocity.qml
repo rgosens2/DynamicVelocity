@@ -290,6 +290,13 @@ MuseScore {
             // We use tick, pitch, and staff(midiChannel) comparison
             // TODO: should probably also do voice comparison
             // ALAS: cannot compare objects, probably because we made a shallow copy
+            // NONO: See: https://musescore.org/en/node/293837
+            // The MuseScore 3.x plugin QML/Javascript implementation uses wrapper objects
+            // to delegate property/method calls to the actual underlying MuseScore C++ objects.
+            // The current wrapper strategy creates new wrappers whenever needed which leads to
+            // many wrappers possibly pointing to the same internal MuseScore object. This
+            // makes it impossible to compare wrappers to see if they point to the same
+            // MuseScore object.
             // HACK: compare tick and pitch
             // HELL: cannot get staff number from orig note selection so let's compare midiChannel
             // to determine if it is the same staff. Very hacky.
