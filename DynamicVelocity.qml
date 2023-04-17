@@ -297,6 +297,7 @@ MuseScore {
             // many wrappers possibly pointing to the same internal MuseScore object. This
             // makes it impossible to compare wrappers to see if they point to the same
             // MuseScore object.
+            // YESS: use is() for comparison
             // HACK: compare tick and pitch
             // HELL: cannot get staff number from orig note selection so let's compare midiChannel
             // to determine if it is the same staff. Very hacky.
@@ -307,11 +308,12 @@ MuseScore {
             // TODO: What happens if we have a grand staff.
             for (var i=0; i<oElementsListOrig.length; i++) {
                 //curScore.startCmd()
-                if (oElementsListOrig[i]['name'] == 'Note' &&
-                    pp.tick == oElementsListOrig[i]['parent']['parent'].tick &&
-                    mscoreElement['pitch'] == oElementsListOrig[i]['pitch'] &&
-                    mscoreElement['track']/4 == oElementsListOrig[i]['track']/4)
-                    //mscoreElement['staff'].part.midiChannel == oElementsListOrig[i]['staff'].part.midiChannel) 
+                if(mscoreElement.is(oElementsListOrig[i]))
+                // if (oElementsListOrig[i]['name'] == 'Note' &&
+                //     pp.tick == oElementsListOrig[i]['parent']['parent'].tick &&
+                //     mscoreElement['pitch'] == oElementsListOrig[i]['pitch'] &&
+                //     mscoreElement['track']/4 == oElementsListOrig[i]['track']/4)
+                //     //mscoreElement['staff'].part.midiChannel == oElementsListOrig[i]['staff'].part.midiChannel) 
                 { 
                     cursor.add(text)
                 }
