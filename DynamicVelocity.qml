@@ -303,7 +303,7 @@ MuseScore {
             // to determine if it is the same staff. Very hacky.
             // WELL: we can get staff number: oElementsListOrig[i]['track']/4
             // So printVelo() did not need the staff param
-            // NOTE: oElementsListOrig does not seem to be a shallow copy: element[].part[].staff[]
+            // NOTE: oElementsListOrig does not seem to be a shallow copy: element[].staff[].part[]
             // All data several arrays deep is there.
             // TODO: What happens if we have a grand staff.
             for (var i=0; i<oElementsListOrig.length; i++) {
