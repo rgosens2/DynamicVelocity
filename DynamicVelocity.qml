@@ -52,10 +52,10 @@ import QtQuick.Dialogs 1.1
 import MuseScore 3.0
 
 MuseScore {
-    // version:  "1.0"
+    // version: "1.0"
     // description: "Examine an Element"
     // menuPath: "Plugins.DEV.Examine an Element"
-    version:  "1.1"
+    version: "1.1"
     description: "Print each note's dynamic velocity as staff text"
     menuPath: "Plugins.DEV.Dynamic Velocity"
 
